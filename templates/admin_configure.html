@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ShapBPT – Admin Configure Trials</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-header: rgba(15, 23, 42, 0.95);
+      --bg-card: #020617;
+      --border: #1f2937;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --btn-outline-border: #4b5563;
+    }
+
+    body[data-theme="light"] {
+      --bg: #f9fafb;
+      --bg-header: rgba(249, 250, 251, 0.95);
+      --bg-card: #ffffff;
+      --border: #e5e7eb;
+      --text-main: #020617;
+      --text-muted: #6b7280;
+      --btn-outline-border: #d1d5db;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--bg-header);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    header .logo span {
+      font-size: 1.1rem;
+    }
+
+    header nav {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    header nav a {
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      opacity: 0.85;
+      cursor: pointer;
+    }
+
+    header nav a:hover,
+    header nav a.active {
+      background: #111827;
+      opacity: 1;
+    }
+
+    body[data-theme="light"] header nav a:hover,
+    body[data-theme="light"] header nav a.active {
+      background: #e5e7eb;
+    }
+
+    .theme-toggle-btn {
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-main);
+      padding: 0.25rem 0.55rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    main {
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 3rem;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 1rem;
+      border: 1px solid var(--border);
+      padding: 1.2rem 1.4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .card-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 0.8rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.6fr);
+      gap: 1rem;
+    }
+
+    @media (max-width: 900px) {
+      .form-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .form-group {
+      margin-bottom: 0.7rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text-main);
+      margin-bottom: 0.2rem;
+    }
+
+    select,
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      background: var(--bg-card);
+      border-radius: 0.5rem;
+      border: 1px solid var(--btn-outline-border);
+      color: var(--text-main);
+      padding: 0.4rem 0.6rem;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    select:focus,
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      border-color: #22c55e;
+    }
+
+    .inline-inputs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .inline-inputs .form-group {
+      flex: 1 1 0;
+      min-width: 150px;
+    }
+
+    .btn-primary {
+      border-radius: 999px;
+      padding: 0.55rem 1.2rem;
+      font-size: 0.9rem;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(135deg, #22c55e, #22d3ee, #a855f7);
+      color: #020617;
+      font-weight: 600;
+      box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.55);
+    }
+
+    .message {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #4ade80;
+    }
+
+    .message.error {
+      color: #f97373;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.6rem;
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 900px) {
+      .preview-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 600px) {
+      .preview-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .preview-card {
+      background: var(--bg-card);
+      border-radius: 0.7rem;
+      border: 1px solid var(--border);
+      padding: 0.35rem;
+      text-align: center;
+    }
+
+    .preview-card img {
+      width: 100%;
+      border-radius: 0.5rem;
+      border: 1px solid #111827;
+      max-height: 140px;
+      object-fit: contain;
+    }
+
+    .preview-label {
+      margin-top: 0.25rem;
+      color: var(--text-main);
+    }
+
+    .preview-filename {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      word-break: break-all;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .config-table-wrapper {
+      border-radius: 0.75rem;
+      border: 1px solid var(--border);
+      margin-top: 0.5rem;
+      background: var(--bg-card);
+      overflow-x: auto; /* horizontal scroll for narrow screens */
+    }
+
+    .config-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .config-table th,
+    .config-table td {
+      padding: 0.35rem 0.5rem;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    .config-table thead th {
+      position: sticky;
+      top: 0;
+      background: var(--bg-card);
+      z-index: 5;
+    }
+
+    .thumb {
+      width: 70px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 0.3rem;
+      border: 1px solid #111827;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .badge.active {
+      background: rgba(34, 197, 94, 0.12);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.5);
+    }
+
+    .badge.inactive {
+      background: rgba(248, 113, 113, 0.1);
+      color: #fca5a5;
+      border: 1px solid rgba(248, 113, 113, 0.5);
+    }
+
+    /* Mobile tweaks: smaller thumbnails & padding */
+    @media (max-width: 600px) {
+      main {
+        padding: 1.2rem 0.9rem 2rem;
+      }
+      .thumb {
+        width: 52px;
+        height: 38px;
+      }
+      .config-table th,
+      .config-table td {
+        padding: 0.3rem 0.35rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <span>🌳</span>
+      <span>ShapBPT – Admin</span>
+    </div>
+    <nav>
+      <button id="theme-toggle" class="theme-toggle-btn">🌙</button>
+      <a href="/admin/dashboard">Dashboard</a>
+      <a href="/admin/configure" class="active">Configure examples</a>
+      <a href="/">User study</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Configure user-study examples</h1>
+    <p class="subtitle">
+      Choose an <strong>input image</strong> and the system will automatically pick the matching
+      explanation maps using the naming convention:
+      <code>BASE_Input.png</code>,
+      <code>BASE_Partition-1000.png</code>,
+      <code>BASE_BPT-1000.png</code>,
+      <code>BASE_LIME-1000.png</code>,
+      <code>BASE_GradCAM.png</code>.
+    </p>
+
+    <!-- Add / edit form -->
+    <div class="card">
+      <div class="card-title">Add a new trial</div>
+      <div class="card-subtitle">
+        Pick one input image from the drop-down or upload new files. We’ll infer all explanation
+        images automatically and show you a preview.
+      </div>
+
+      <!-- Optional upload block (if you keep the upload route) -->
+      <form method="post" action="/admin/configure/upload" enctype="multipart/form-data" style="margin-bottom:1rem;">
+        <div class="form-group">
+          <label for="upload_files">Upload new images (optional)</label>
+          <input type="file" id="upload_files" name="files" multiple accept="image/png,image/jpeg" />
+        </div>
+        <button type="submit" class="btn-primary">Upload files</button>
+      </form>
+
+      <!-- Main configure form (select input, auto-detect explanation images) -->
+      <form method="post" action="/admin/configure">
+        <div class="form-grid">
+          <!-- Left side: form fields -->
+          <div>
+            <div class="form-group">
+              <label for="input_image_select">Input image ( *_Input.png )</label>
+              <select id="input_image_select" name="input_image" required>
+                <option value="">-- choose input image --</option>
+                {% for fname in input_candidates %}
+                  <option value="{{ fname }}">{{ fname }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="inline-inputs">
+              <div class="form-group">
+                <label for="trial_id">Trial ID</label>
+                <input type="text" id="trial_id" name="trial_id"
+                       placeholder="e.g. butterfly" />
+              </div>
+              <div class="form-group">
+                <label for="display_name">Display name</label>
+                <input type="text" id="display_name" name="display_name"
+                       placeholder="e.g. Butterfly" />
+              </div>
+              <div class="form-group">
+                <label for="max_per_subject">Max times shown per subject (optional)</label>
+                <input type="number" id="max_per_subject" name="max_per_subject"
+                       min="1" placeholder="e.g. 1" />
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary">Add trial</button>
+
+            {% if message %}
+              <div class="message">{{ message }}</div>
+            {% endif %}
+            {% if error %}
+              <div class="message error">{{ error }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Right side: preview -->
+          <div>
+            <label>Preview (auto-detected from filename)</label>
+            <div class="preview-grid">
+              <div class="preview-card">
+                <div class="preview-label">Input</div>
+                <img id="preview_raw" src="" alt="Input preview">
+                <div class="preview-filename" id="preview_raw_name">–</div>
+              </div>
+              <div class="preview-card">
+                <div class="preview-label">AA-1000</div>
+                <img id="preview_aa" src="" alt="AA preview">
+                <div class="preview-filename" id="preview_aa_name">–</div>
+              </div>
+              <div class="preview-card">
+                <div class="preview-label">BPT-1000</div>
+                <img id="preview_bpt" src="" alt="BPT preview">
+                <div class="preview-filename" id="preview_bpt_name">–</div>
+              </div>
+              <div class="preview-card">
+                <div class="preview-label">LIME-1000</div>
+                <img id="preview_lime" src="" alt="LIME preview">
+                <div class="preview-filename" id="preview_lime_name">–</div>
+              </div>
+              <div class="preview-card">
+                <div class="preview-label">GradCAM</div>
+                <img id="preview_grad" src="" alt="GradCAM preview">
+                <div class="preview-filename" id="preview_grad_name">–</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Existing trials table -->
+    <h2 class="section-title">
+      Configured trials (total: {{ trials|length }})
+    </h2>
+    <div class="config-table-wrapper">
+      <table class="config-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Trial ID</th>
+            <th>Display name</th>
+            <th>Input image</th>
+            <th>AA image</th>
+            <th>BPT image</th>
+            <th>LIME image</th>
+            <th>GradCAM image</th>
+            <th>Active</th>
+            <th>Max/subject</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in trials %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ t.trial_id }}</td>
+              <td>{{ t.display_name }}</td>
+              <td>
+                <img class="thumb" src="{{ t.raw_image }}" alt="raw">
+              </td>
+              <td>
+                <img class="thumb" src="{{ t.aa_image }}" alt="aa">
+              </td>
+              <td>
+                <img class="thumb" src="{{ t.bpt_image }}" alt="bpt">
+              </td>
+              <td>
+                <img class="thumb" src="{{ t.lime_image }}" alt="lime">
+              </td>
+              <td>
+                <img class="thumb" src="{{ t.gradcam_image }}" alt="gradcam">
+              </td>
+              <td>
+                {% if t.is_active %}
+                  <span class="badge active">Active</span>
+                {% else %}
+                  <span class="badge inactive">Inactive</span>
+                {% endif %}
+              </td>
+              <td>{{ t.max_per_subject if t.max_per_subject is not none else "–" }}</td>
+              <td>{{ t.created_at }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    // Theme toggle
+    const THEME_KEY = "shapbpt_theme";
+    const themeToggleBtn = document.getElementById("theme-toggle");
+
+    function applyTheme(theme) {
+      document.body.setAttribute("data-theme", theme);
+      themeToggleBtn.textContent = theme === "dark" ? "🌙" : "☀️";
+    }
+
+    function initTheme() {
+      let saved = localStorage.getItem(THEME_KEY);
+      if (!saved) saved = "dark";
+      applyTheme(saved);
+    }
+
+    themeToggleBtn.addEventListener("click", () => {
+      const current = document.body.getAttribute("data-theme") || "dark";
+      const next = current === "dark" ? "light" : "dark";
+      localStorage.setItem(THEME_KEY, next);
+      applyTheme(next);
+    });
+
+    initTheme();
+
+    // Auto-preview from input image filename
+    const inputSelect = document.getElementById("input_image_select");
+    const trialIdInput = document.getElementById("trial_id");
+    const displayNameInput = document.getElementById("display_name");
+
+    const basePrefix = "/static/images/";
+
+    const previewRaw = document.getElementById("preview_raw");
+    const previewAA = document.getElementById("preview_aa");
+    const previewBPT = document.getElementById("preview_bpt");
+    const previewLIME = document.getElementById("preview_lime");
+    const previewGrad = document.getElementById("preview_grad");
+
+    const previewRawName = document.getElementById("preview_raw_name");
+    const previewAAName = document.getElementById("preview_aa_name");
+    const previewBPTName = document.getElementById("preview_bpt_name");
+    const previewLIMEName = document.getElementById("preview_lime_name");
+    const previewGradName = document.getElementById("preview_grad_name");
+
+    function updatePreview() {
+      const fname = inputSelect.value;
+      if (!fname) {
+        previewRaw.src = "";
+        previewAA.src = "";
+        previewBPT.src = "";
+        previewLIME.src = "";
+        previewGrad.src = "";
+
+        previewRawName.textContent = "–";
+        previewAAName.textContent = "–";
+        previewBPTName.textContent = "–";
+        previewLIMEName.textContent = "–";
+        previewGradName.textContent = "–";
+        return;
+      }
+
+      const baseId = fname.replace("_Input.png", "");
+
+      if (!trialIdInput.value) {
+        trialIdInput.value = baseId;
+      }
+      if (!displayNameInput.value) {
+        displayNameInput.value = baseId;
+      }
+
+      const aaFile = baseId + "_Partition-1000.png";
+      const bptFile = baseId + "_BPT-1000.png";
+      const limeFile = baseId + "_LIME-1000.png";
+      const gradFile = baseId + "_GradCAM.png";
+
+      previewRaw.src = basePrefix + fname;
+      previewAA.src = basePrefix + aaFile;
+      previewBPT.src = basePrefix + bptFile;
+      previewLIME.src = basePrefix + limeFile;
+      previewGrad.src = basePrefix + gradFile;
+
+      previewRawName.textContent = fname;
+      previewAAName.textContent = aaFile;
+      previewBPTName.textContent = bptFile;
+      previewLIMEName.textContent = limeFile;
+      previewGradName.textContent = gradFile;
+    }
+
+    inputSelect.addEventListener("change", updatePreview);
+  </script>
+</body>
+</html>

@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ShapBPT – Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-header: rgba(15, 23, 42, 0.95);
+      --bg-card: #020617;
+      --border: #1f2937;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --accent: #22c55e;
+    }
+
+    body[data-theme="light"] {
+      --bg: #f9fafb;
+      --bg-header: rgba(249, 250, 251, 0.95);
+      --bg-card: #ffffff;
+      --border: #e5e7eb;
+      --text-main: #020617;
+      --text-muted: #6b7280;
+      --accent: #16a34a;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text-main);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--bg-header);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    header .logo span {
+      font-size: 1.1rem;
+    }
+
+    header nav {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    header nav a {
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      opacity: 0.85;
+      cursor: pointer;
+    }
+
+    header nav a:hover,
+    header nav a.active {
+      background: #111827;
+      opacity: 1;
+    }
+
+    body[data-theme="light"] header nav a:hover,
+    body[data-theme="light"] header nav a.active {
+      background: #e5e7eb;
+    }
+
+    .theme-toggle-btn {
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-main);
+      padding: 0.25rem 0.55rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 3rem;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 1.4rem;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .cards-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 600px) {
+      .cards-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 1rem;
+      border: 1px solid var(--border);
+      padding: 0.9rem 1rem;
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+
+    .card-metric {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.15rem;
+    }
+
+    .card-caption {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      margin: 0;
+    }
+
+    .section-caption {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 0.7rem;
+    }
+
+    .panel {
+      background: var(--bg-card);
+      border-radius: 1rem;
+      border: 1px solid var(--border);
+      padding: 1rem 1.1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .source-switch {
+      display: inline-flex;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+    }
+
+    .src-btn {
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-main);
+      padding: 0.25rem 0.7rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .src-btn.active {
+      background: rgba(34, 197, 94, 0.15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .flex-row {
+      display: flex;
+      gap: 1rem;
+    }
+
+    @media (max-width: 900px) {
+      .flex-row {
+        flex-direction: column;
+      }
+    }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin: 0.35rem 0;
+      font-size: 0.85rem;
+    }
+
+    .bar-label {
+      width: 80px;
+      flex-shrink: 0;
+    }
+
+    .bar-track {
+      flex: 1;
+      display: flex;
+      gap: 0.15rem;
+      height: 14px;
+    }
+
+    .bar-chunk {
+      height: 100%;
+      border-radius: 999px;
+    }
+
+    .bar-chunk.rank1 { background: #22c55e; }
+    .bar-chunk.rank2 { background: #3b82f6; }
+    .bar-chunk.rank3 { background: #f97316; }
+    .bar-chunk.rank4 { background: #ef4444; }
+
+    .bar-counts {
+      width: 130px;
+      flex-shrink: 0;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      margin-top: 0.4rem;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .legend-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+    }
+
+    .table-wrapper {
+      border-radius: 0.7rem;
+      border: 1px solid var(--border);
+      overflow-x: auto;
+      margin-top: 0.4rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      padding: 0.35rem 0.5rem;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    body[data-theme="light"] th {
+      background: #e5e7eb;
+    }
+
+    .heatmap-cell {
+      text-align: center;
+      font-size: 0.8rem;
+    }
+
+    .heatmap-cell span {
+      display: inline-block;
+      min-width: 3ch;
+    }
+
+    .expertise-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.6rem;
+    }
+
+    @media (max-width: 800px) {
+      .expertise-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .mini-hist {
+      font-size: 0.8rem;
+    }
+
+    .mini-hist-bars {
+      margin-top: 0.3rem;
+    }
+
+    .mini-hist-row {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin: 0.14rem 0;
+    }
+
+    .mini-hist-label {
+      width: 1.2rem;
+      text-align: right;
+      color: var(--text-muted);
+    }
+
+    .mini-hist-track {
+      flex: 1;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.25);
+    }
+
+    .mini-hist-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .mini-hist-count {
+      width: 2rem;
+      text-align: right;
+      color: var(--text-muted);
+    }
+
+    .stat-inline {
+      font-size: 0.9rem;
+      margin-top: 0.2rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.18rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      border: 1px solid rgba(34, 197, 94, 0.5);
+      color: #4ade80;
+      background: rgba(22, 163, 74, 0.08);
+    }
+
+    .pill.bad {
+      border-color: rgba(248, 113, 113, 0.5);
+      color: #fca5a5;
+      background: rgba(248, 113, 113, 0.08);
+    }
+
+    .muted {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 600px) {
+      main {
+        padding: 1.3rem 0.9rem 2rem;
+      }
+      th, td {
+        padding: 0.3rem 0.4rem;
+      }
+      .card-metric {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <span>🌳</span>
+      <span>ShapBPT – Admin</span>
+    </div>
+    <nav>
+      <button id="theme-toggle" class="theme-toggle-btn">🌙</button>
+      <a href="/admin/dashboard" class="active">Dashboard</a>
+      <a href="/admin/configure">Configure examples</a>
+      <a href="/">User study</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Human-study dashboard</h1>
+    <p class="subtitle">
+      Live view of rankings collected through the ShapBPT user-study interface,
+      plus offline ratings from the UniTo lab Excel file.
+    </p>
+
+    <!-- Top summary cards -->
+    <div class="cards-grid" id="summary-cards">
+      <div class="card">
+        <div class="card-title">Total rankings</div>
+        <div class="card-metric" id="metric-total-rankings">–</div>
+        <div class="card-caption">Number of (image, method) rank entries.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Participants</div>
+        <div class="card-metric" id="metric-subjects">–</div>
+        <div class="card-caption">Unique subject IDs with at least one ranking.</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Expertise profiles</div>
+        <div class="card-metric" id="metric-expertise">–</div>
+        <div class="card-caption" id="metric-source-label">
+          Source: live web-study (DB)
+        </div>
+      </div>
+    </div>
+
+    <!-- Rank distribution panel -->
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Rank distributions per method</h2>
+        <p class="section-caption">
+          Approximate version of the grouped bar chart: each row shows how often each method
+          was placed 1st–4th. Colors reflect rank (green = best, red = worst).
+        </p>
+      </div>
+      <div class="source-switch">
+        <button class="src-btn active" id="btn-source-live">Use live web data</button>
+        <button class="src-btn" id="btn-source-unito">Load ratings from UniTo Lab (XLSX)</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div id="rank-chart"></div>
+      <div class="legend">
+        <div class="legend-item">
+          <span class="legend-swatch" style="background:#22c55e;"></span> 1st place
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch" style="background:#3b82f6;"></span> 2nd place
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch" style="background:#f97316;"></span> 3rd place
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch" style="background:#ef4444;"></span> 4th place
+        </div>
+      </div>
+      <p class="muted" id="rank-chart-note"></p>
+    </div>
+
+    <!-- Trials coverage + expertise row -->
+    <div class="flex-row">
+      <!-- Trials coverage -->
+      <div class="panel" style="flex:1.1;">
+        <h2 class="section-title">Per-trial coverage</h2>
+        <p class="section-caption">
+          How many users have completed each configured example.
+        </p>
+        <div class="table-wrapper">
+          <table id="trials-table">
+            <thead>
+              <tr>
+                <th>Trial</th>
+                <th>#subjects</th>
+                <th>#rankings</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="muted" id="trials-note"></p>
+      </div>
+
+      <!-- Expertise -->
+      <div class="panel" style="flex:1;">
+        <h2 class="section-title">User expertise (self-reported)</h2>
+        <p class="section-caption">
+          1 = new to field, 5 = expert. Only users who opted in are counted.
+        </p>
+        <div class="expertise-grid" id="expertise-grid">
+          <!-- filled via JS -->
+        </div>
+        <p class="muted" id="expertise-note"></p>
+      </div>
+    </div>
+
+    <!-- Friedman + Nemenyi -->
+    <div class="panel">
+      <h2 class="section-title">Friedman &amp; Nemenyi statistics</h2>
+      <p class="section-caption">
+        Non-parametric repeated-measures ANOVA (Friedman χ²) over subjects × methods,
+        followed by post-hoc Nemenyi pairwise comparisons.
+      </p>
+
+      <div class="flex-row">
+        <div style="flex:0.7; min-width:230px;">
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Test</th>
+                  <th>Statistic</th>
+                  <th>p-value</th>
+                  <th>Interpretation</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Friedman</td>
+                  <td id="friedman-stat">–</td>
+                  <td id="friedman-p">–</td>
+                  <td id="friedman-interpret" class="stat-inline">Waiting for data…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="muted" style="margin-top:0.5rem;">
+            (p &lt; 0.05 indicates at least one method differs significantly.)
+          </p>
+        </div>
+
+        <div style="flex:1.3; min-width:260px;">
+          <div class="table-wrapper">
+            <table id="nemenyi-table">
+              <thead id="nemenyi-head"></thead>
+              <tbody id="nemenyi-body"></tbody>
+            </table>
+          </div>
+          <p class="muted" style="margin-top:0.5rem;">
+            Nemenyi p-value matrix: smaller values (e.g., &lt; 0.05) indicate significant
+            differences in average rank between methods. Diagonal = 1.00.
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // -------- Theme toggle --------
+    const THEME_KEY = "shapbpt_theme";
+    const themeBtn = document.getElementById("theme-toggle");
+
+    function applyTheme(theme) {
+      document.body.setAttribute("data-theme", theme);
+      themeBtn.textContent = theme === "dark" ? "🌙" : "☀️";
+    }
+
+    (function initTheme(){
+      let saved = localStorage.getItem(THEME_KEY);
+      if (!saved) saved = "dark";
+      applyTheme(saved);
+    })();
+
+    themeBtn.addEventListener("click", () => {
+      const current = document.body.getAttribute("data-theme") || "dark";
+      const next = current === "dark" ? "light" : "dark";
+      localStorage.setItem(THEME_KEY, next);
+      applyTheme(next);
+    });
+
+    // -------- Helpers --------
+    function safeInt(x, fallback=0) {
+      if (x === null || x === undefined) return fallback;
+      const v = parseInt(x, 10);
+      return isNaN(v) ? fallback : v;
+    }
+
+    function safeFloat(x, fallback=null) {
+      if (x === null || x === undefined) return fallback;
+      const v = parseFloat(x);
+      return isNaN(v) ? fallback : v;
+    }
+
+    const btnLive = document.getElementById("btn-source-live");
+    const btnUnito = document.getElementById("btn-source-unito");
+    const sourceLabel = document.getElementById("metric-source-label");
+
+    function setSourceButtons(active) {
+      if (active === "unito") {
+        btnUnito.classList.add("active");
+        btnLive.classList.remove("active");
+      } else {
+        btnLive.classList.add("active");
+        btnUnito.classList.remove("active");
+      }
+    }
+
+    // -------- Fetch and render dashboard data --------
+    async function loadDashboard(source="live") {
+      let url = "/api/summary_for_dashboard";
+      if (source === "unito") {
+        url = "/api/unito_lab_summary";
+      }
+
+      try {
+        const res = await fetch(url);
+        const txt = await res.text();
+        if (!res.ok) {
+          console.error("Error fetching", url, txt);
+          document.getElementById("rank-chart-note").textContent =
+            "Could not load dashboard data (server error).";
+          return;
+        }
+        const data = JSON.parse(txt);
+        renderAll(data, source);
+      } catch (err) {
+        console.error(err);
+        document.getElementById("rank-chart-note").textContent =
+          "Could not load dashboard data (network error).";
+      }
+    }
+
+    function renderAll(data, source) {
+      renderSummaryCards(data, source);
+      renderRankChart(data);
+      renderTrialsTable(data);
+      renderExpertise(data, source);
+      renderFriedman(data);
+      renderNemenyi(data);
+    }
+
+    function renderSummaryCards(data, source) {
+      const methods = data.methods || [];
+      let totalRankings = 0;
+
+      methods.forEach(m => {
+        totalRankings += safeInt(m.total_votes, 0);
+      });
+
+      const totalSubjects =
+        data.subject_count ||
+        data.unique_subjects ||
+        data.n_subjects ||
+        null;
+
+      const ex = data.expertise || null;
+      const expertiseProfiles = ex && ex.n_profiles ? ex.n_profiles : 0;
+
+      document.getElementById("metric-total-rankings").textContent =
+        totalRankings ? totalRankings.toString() : "0";
+
+      document.getElementById("metric-subjects").textContent =
+        totalSubjects != null ? totalSubjects.toString() : "–";
+
+      // For Excel-based data there is no expertise info
+      if (source === "unito") {
+        document.getElementById("metric-expertise").textContent = "0";
+        sourceLabel.textContent = "Source: UniTo Lab Excel file";
+      } else {
+        document.getElementById("metric-expertise").textContent =
+          expertiseProfiles ? expertiseProfiles.toString() : "0";
+        sourceLabel.textContent = "Source: live web-study (DB)";
+      }
+    }
+
+    function renderRankChart(data) {
+      const container = document.getElementById("rank-chart");
+      container.innerHTML = "";
+      const methods = data.methods || [];
+
+      if (!methods.length) {
+        container.innerHTML = "<p class='muted'>No rankings collected yet.</p>";
+        return;
+      }
+
+      let globalMax = 0;
+      methods.forEach(m => {
+        const rc = m.rank_counts || {};
+        const s = safeInt(rc["1"]) + safeInt(rc["2"]) + safeInt(rc["3"]) + safeInt(rc["4"]);
+        if (s > globalMax) globalMax = s;
+      });
+      if (globalMax === 0) globalMax = 1;
+
+      methods.forEach(m => {
+        const name = m.method_id || "method";
+        const rc = m.rank_counts || {};
+        const c1 = safeInt(rc["1"]);
+        const c2 = safeInt(rc["2"]);
+        const c3 = safeInt(rc["3"]);
+        const c4 = safeInt(rc["4"]);
+        const total = c1 + c2 + c3 + c4 || 1;
+
+        const row = document.createElement("div");
+        row.className = "bar-row";
+
+        const label = document.createElement("div");
+        label.className = "bar-label";
+        label.textContent = name;
+        row.appendChild(label);
+
+        const track = document.createElement("div");
+        track.className = "bar-track";
+
+        function makeChunk(count, rankClass) {
+          const chunk = document.createElement("div");
+          chunk.className = "bar-chunk " + rankClass;
+          const frac = count / globalMax;
+          chunk.style.width = (frac * 100).toFixed(1) + "%";
+          return chunk;
+        }
+
+        track.appendChild(makeChunk(c1, "rank1"));
+        track.appendChild(makeChunk(c2, "rank2"));
+        track.appendChild(makeChunk(c3, "rank3"));
+        track.appendChild(makeChunk(c4, "rank4"));
+        row.appendChild(track);
+
+        const countsDiv = document.createElement("div");
+        countsDiv.className = "bar-counts";
+        const avgRank = safeFloat(m.avg_rank);
+        const firsts = safeInt(m.first_places);
+        const avgText = avgRank != null ? avgRank.toFixed(2) : "–";
+        countsDiv.textContent =
+          `N=${total},  #1=${firsts},  mean=${avgText}`;
+        row.appendChild(countsDiv);
+
+        container.appendChild(row);
+      });
+
+      document.getElementById("rank-chart-note").textContent =
+        "Bars are scaled relative to the method with the largest number of rankings.";
+    }
+
+    function renderTrialsTable(data) {
+      const tbody = document.querySelector("#trials-table tbody");
+      tbody.innerHTML = "";
+      const trials = data.trials || [];
+
+      if (!trials.length) {
+        tbody.innerHTML = "<tr><td colspan='3'>No trial data yet.</td></tr>";
+        return;
+      }
+
+      trials.forEach(t => {
+        const tr = document.createElement("tr");
+        const tdName = document.createElement("td");
+        tdName.textContent = t.trial_name || t.trial_id || "–";
+        const tdSub = document.createElement("td");
+        tdSub.textContent = (t.n_subjects != null ? t.n_subjects : "–");
+        const tdRank = document.createElement("td");
+        tdRank.textContent = (t.n_rankings != null ? t.n_rankings : "–");
+        tr.appendChild(tdName);
+        tr.appendChild(tdSub);
+        tr.appendChild(tdRank);
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById("trials-note").textContent =
+        "Each subject contributes one set of ranks per trial they completed.";
+    }
+
+    function renderExpertise(data, source) {
+      const grid = document.getElementById("expertise-grid");
+      const note = document.getElementById("expertise-note");
+      grid.innerHTML = "";
+      note.textContent = "";
+
+      if (source === "unito") {
+        grid.innerHTML =
+          "<p class='muted'>Excel file does not contain expertise metadata.</p>";
+        return;
+      }
+
+      const ex = data.expertise || null;
+      if (!ex || !ex.n_profiles) {
+        grid.innerHTML = "<p class='muted'>No expertise profiles collected yet.</p>";
+        return;
+      }
+
+      const profiles = ex.n_profiles || 0;
+
+      function buildMiniHist(title, hist) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "mini-hist";
+        wrapper.innerHTML = `<strong>${title}</strong>`;
+        const bars = document.createElement("div");
+        bars.className = "mini-hist-bars";
+
+        const vals = [];
+        for (let k=1; k<=5; k++) {
+          vals.push(safeInt(hist && hist[k] || hist && hist[String(k)] || 0));
+        }
+        const maxCount = Math.max(1, ...vals);
+
+        for (let level=1; level<=5; level++) {
+          const row = document.createElement("div");
+          row.className = "mini-hist-row";
+
+          const lab = document.createElement("div");
+          lab.className = "mini-hist-label";
+          lab.textContent = level.toString();
+
+          const track = document.createElement("div");
+          track.className = "mini-hist-track";
+          const fill = document.createElement("div");
+          fill.className = "mini-hist-fill";
+          const c = vals[level-1];
+          fill.style.width = ((c / maxCount) * 100).toFixed(1) + "%";
+          track.appendChild(fill);
+
+          const cnt = document.createElement("div");
+          cnt.className = "mini-hist-count";
+          cnt.textContent = c ? c.toString() : "0";
+
+          row.appendChild(lab);
+          row.appendChild(track);
+          row.appendChild(cnt);
+
+          bars.appendChild(row);
+        }
+
+        wrapper.appendChild(bars);
+        return wrapper;
+      }
+
+      grid.appendChild(buildMiniHist("Computer vision", ex.cv_hist || {}));
+      grid.appendChild(buildMiniHist("Explainable AI", ex.xai_hist || {}));
+      grid.appendChild(buildMiniHist("LIME/SHAP/GradCAM", ex.methods_hist || {}));
+
+      note.textContent = `Total expertise profiles: ${profiles}.`;
+    }
+
+    function renderFriedman(data) {
+      const statCell = document.getElementById("friedman-stat");
+      const pCell = document.getElementById("friedman-p");
+      const interpretCell = document.getElementById("friedman-interpret");
+
+      const fr = data.friedman || null;
+      if (!fr) {
+        statCell.textContent = "–";
+        pCell.textContent = "–";
+        interpretCell.textContent = "Not enough data to run Friedman test yet.";
+        interpretCell.className = "stat-inline";
+        return;
+      }
+      const stat = safeFloat(fr.statistic);
+      const p = safeFloat(fr.pvalue);
+
+      statCell.textContent = stat != null ? stat.toFixed(2) : "–";
+      pCell.textContent = p != null ? p.toExponential(2) : "–";
+
+      if (p != null && p < 0.05) {
+        interpretCell.innerHTML = `<span class="pill">Significant differences (p &lt; 0.05)</span>`;
+      } else if (p != null) {
+        interpretCell.innerHTML = `<span class="pill bad">No significant differences (p ≥ 0.05)</span>`;
+      } else {
+        interpretCell.textContent = "Friedman test result incomplete.";
+        interpretCell.className = "stat-inline";
+      }
+    }
+
+    function renderNemenyi(data) {
+      const head = document.getElementById("nemenyi-head");
+      const body = document.getElementById("nemenyi-body");
+      head.innerHTML = "";
+      body.innerHTML = "";
+
+      const ne = data.nemenyi || null;
+      if (!ne || !ne.labels || !ne.matrix) {
+        head.innerHTML = "<tr><th>Method</th><th>…</th></tr>";
+        body.innerHTML = "<tr><td colspan='2'>Nemenyi matrix not available yet.</td></tr>";
+        return;
+      }
+
+      const labels = ne.labels;
+      const mat = ne.matrix;
+
+      // Header
+      const trHead = document.createElement("tr");
+      const thBlank = document.createElement("th");
+      thBlank.textContent = "";
+      trHead.appendChild(thBlank);
+      labels.forEach(l => {
+        const th = document.createElement("th");
+        th.textContent = l;
+        trHead.appendChild(th);
+      });
+      head.appendChild(trHead);
+
+      // Body
+      labels.forEach((rowLabel, i) => {
+        const tr = document.createElement("tr");
+        const thRow = document.createElement("th");
+        thRow.textContent = rowLabel;
+        tr.appendChild(thRow);
+
+        (mat[i] || []).forEach((val, j) => {
+          const td = document.createElement("td");
+          td.className = "heatmap-cell";
+          const p = safeFloat(val);
+          let txt = "–";
+          if (p != null) {
+            if (p < 0.0001) txt = "<0.0001";
+            else txt = p.toFixed(4);
+          }
+          td.innerHTML = `<span>${txt}</span>`;
+          tr.appendChild(td);
+        });
+
+        body.appendChild(tr);
+      });
+    }
+
+    // ---- Source buttons ----
+    btnLive.addEventListener("click", () => {
+      setSourceButtons("live");
+      loadDashboard("live");
+    });
+
+    btnUnito.addEventListener("click", () => {
+      setSourceButtons("unito");
+      loadDashboard("unito");
+    });
+
+    // Initial load (live DB)
+    setSourceButtons("live");
+    loadDashboard("live");
+  </script>
+</body>
+</html>

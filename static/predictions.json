@@ -1,0 +1,46 @@
+[
+    {
+        "image_name": "ILSVRC2012_val_00017635",
+        "image_path": "D:\\DS\\ImageNet\\ImageNetS/ILSVRC2012_img_val_S/ImageNetS50/validation-segmentation//n02165456//ILSVRC2012_val_00017635.png",
+        "pretrain_model": "resnet",
+        "predicted_class": "ladybug",
+        "predicted_class_id": 301,
+        "predicted_probability": 0.32020995020866394,
+        "background_probability": 0.0005422104732133448,
+        "imagenet_class_id": 301,
+        "timestamp": "2025-12-02 18:21:33"
+    },
+    {
+        "image_name": "ILSVRC2012_val_00047683",
+        "image_path": "D:\\DS\\ImageNet\\ImageNetS/ILSVRC2012_img_val_S/ImageNetS50/validation-segmentation//n02281406//ILSVRC2012_val_00047683.png",
+        "pretrain_model": "resnet",
+        "predicted_class": "sulphur_butterfly",
+        "predicted_class_id": 325,
+        "predicted_probability": 0.4616542160511017,
+        "background_probability": 0.00023770688858348876,
+        "imagenet_class_id": 325,
+        "timestamp": "2025-12-02 18:21:34"
+    },
+    {
+        "image_name": "ILSVRC2012_val_00008733",
+        "image_path": "D:\\DS\\ImageNet\\ImageNetS/ILSVRC2012_img_val_S/ImageNetS50/validation-segmentation//n03891251//ILSVRC2012_val_00008733.png",
+        "pretrain_model": "resnet",
+        "predicted_class": "park_bench",
+        "predicted_class_id": 703,
+        "predicted_probability": 0.302165150642395,
+        "background_probability": 0.0003268786531407386,
+        "imagenet_class_id": 703,
+        "timestamp": "2025-12-02 18:21:34"
+    },
+    {
+        "image_name": "ILSVRC2012_val_00005428",
+        "image_path": "D:\\DS\\ImageNet\\ImageNetS/ILSVRC2012_img_val_S/ImageNetS50/validation-segmentation//n06794110//ILSVRC2012_val_00005428.png",
+        "pretrain_model": "resnet",
+        "predicted_class": "street_sign",
+        "predicted_class_id": 919,
+        "predicted_probability": 0.3734685778617859,
+        "background_probability": 0.0019139698706567287,
+        "imagenet_class_id": 919,
+        "timestamp": "2025-12-02 18:21:35"
+    }
+]

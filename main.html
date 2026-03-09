@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ShapBPT Interactive Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #050816;
+      color: #f9fafb;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #1f2937;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    header .logo span {
+      font-size: 1.1rem;
+    }
+
+    header nav a {
+      margin-left: 1rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      opacity: 0.85;
+      cursor: pointer;
+    }
+
+    header nav a.active,
+    header nav a:hover {
+      background: #111827;
+      opacity: 1;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 3rem;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Hero section */
+    #home {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+      margin-top: 2rem;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
+      gap: 2rem;
+      align-items: center;
+    }
+
+    @media (max-width: 800px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .hero-title {
+      font-size: clamp(2.2rem, 4vw, 2.8rem);
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, #22c55e, #22d3ee, #a855f7);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 1rem;
+      color: #d1d5db;
+      max-width: 36rem;
+    }
+
+    .hero-actions {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .btn-primary,
+    .btn-outline {
+      border-radius: 999px;
+      padding: 0.6rem 1.1rem;
+      font-size: 0.95rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease,
+        border-color 0.1s ease, color 0.1s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #22c55e, #22d3ee, #a855f7);
+      color: #020617;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 34px rgba(59, 130, 246, 0.55);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border-color: #4b5563;
+      color: #e5e7eb;
+    }
+
+    .btn-outline:hover {
+      background: #111827;
+      border-color: #9ca3af;
+    }
+
+    .hero-card {
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      background: radial-gradient(circle at top, #1e293b, #020617);
+      border: 1px solid #1f2937;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.7);
+    }
+
+    .hero-card h2 {
+      margin-top: 0;
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+      color: #9ca3af;
+      font-weight: 500;
+    }
+
+    .hero-card p {
+      font-size: 0.95rem;
+      color: #d1d5db;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .metric {
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 0.9rem;
+      padding: 0.7rem;
+      border: 1px solid #1f2937;
+    }
+
+    .metric-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #9ca3af;
+    }
+
+    .metric-value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 0.25rem;
+    }
+
+    /* Applications section */
+    #applications {
+      margin-top: 3rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .section-subtitle {
+      font-size: 0.95rem;
+      color: #9ca3af;
+      margin-bottom: 1.5rem;
+    }
+
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    @media (max-width: 900px) {
+      .app-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 600px) {
+      .app-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .app-card {
+      background: #020617;
+      border-radius: 1.1rem;
+      border: 1px solid #1f2937;
+      padding: 1rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.5rem;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease,
+        background 0.12s ease;
+    }
+
+    .app-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 30px rgba(15, 23, 42, 0.7);
+      border-color: #22c55e;
+      background: radial-gradient(circle at top, #020617, #020617);
+    }
+
+    .app-name {
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+    }
+
+    .app-desc {
+      font-size: 0.9rem;
+      color: #d1d5db;
+    }
+
+    .app-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      border: 1px solid #374151;
+      color: #9ca3af;
+      margin-top: 0.25rem;
+    }
+
+    /* Example viewer */
+    #example-viewer {
+      margin-top: 3rem;
+      border-radius: 1.5rem;
+      border: 1px solid #1f2937;
+      background: #020617;
+      padding: 1.5rem;
+      display: none;
+    }
+
+    #example-viewer.visible {
+      display: block;
+    }
+
+    .viewer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .viewer-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .viewer-application-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #9ca3af;
+    }
+
+    .viewer-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
+      gap: 1rem;
+    }
+
+    @media (max-width: 900px) {
+      .viewer-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .viewer-panel {
+      background: #020617;
+      border-radius: 1rem;
+      border: 1px solid #1f2937;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .viewer-panel h3 {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #9ca3af;
+      margin: 0;
+    }
+
+    .viewer-panel img {
+      width: 100%;
+      border-radius: 0.9rem;
+      border: 1px solid #111827;
+      display: block;
+    }
+
+    .explanation-text {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #e5e7eb;
+    }
+
+    .rating-area {
+      margin-top: 1.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .rating-buttons {
+      display: flex;
+      gap: 0.3rem;
+      align-items: center;
+    }
+
+    .rating-buttons button {
+      background: #020617;
+      border-radius: 999px;
+      border: 1px solid #374151;
+      padding: 0.35rem 0.65rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: #e5e7eb;
+      min-width: 2.1rem;
+    }
+
+    .rating-buttons button:hover {
+      background: #111827;
+    }
+
+    .rating-status {
+      font-size: 0.85rem;
+      color: #9ca3af;
+    }
+
+    .viewer-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <span>🌳</span>
+      <span>ShapBPT Demo</span>
+    </div>
+    <nav>
+      <a id="nav-home" class="active">Home</a>
+      <a id="nav-apps">Applications</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Main / Home -->
+    <section id="home">
+      <div class="hero">
+        <div>
+          <!-- <h1> <span>AAAI-26</span> </h1> -->
+
+          <h1 class="hero-title">
+            Interpretable <span>ShapBPT</span> Explanations in Your Browser
+          </h1>
+          <p class="hero-subtitle">
+            This interactive demo visualizes ShapBPT explanations for different vision tasks—
+            including object recognition, facial attributes, and anomaly detection. Explore images,
+            inspect their attributions, and rate how meaningful the explanations look to you.
+          </p>
+          <div class="hero-actions">
+            <button class="btn-primary" id="explore-btn">Explore applications</button>
+            <button class="btn-outline" id="random-example-btn">
+              Show a random example
+            </button>
+          </div>
+        </div>
+
+        <div class="hero-card">
+          <h2>ShapBPT at a glance</h2>
+          <p>
+            ShapBPT uses binary partition trees tailored to the data to compute fine-grained SHAP
+            attributions. Regions are adapted to the image structure, avoiding rigid grids.
+          </p>
+          <p>
+            Use this page to collect human feedback about which explanations look trustworthy,
+            consistent, or surprising.
+          </p>
+          <div class="hero-metrics">
+            <div class="metric">
+              <div class="metric-label">Tasks</div>
+              <div class="metric-value">3</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Images</div>
+              <div class="metric-value" id="metric-images">–</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Your ratings</div>
+              <div class="metric-value" id="metric-ratings">0</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Applications teaser on home -->
+      <section id="applications">
+        <h2 class="section-title">Applications</h2>
+        <p class="section-subtitle">
+          Pick a task to see ShapBPT explanations on representative images, then rate how
+          satisfactory the explanations are.
+        </p>
+
+        <div class="app-grid">
+          <div class="app-card" data-app="object_recognition">
+            <div>
+              <div class="app-name">Object Recognition</div>
+              <div class="app-desc">
+                ShapBPT highlights the regions most responsible for the predicted object class.
+              </div>
+            </div>
+            <div class="app-tag">ImageNet-like objects</div>
+          </div>
+
+          <div class="app-card" data-app="facial_attributes">
+            <div>
+              <div class="app-name">Facial Attributes</div>
+              <div class="app-desc">
+                Inspect which regions of a face drive attribute predictions like “smiling”.
+              </div>
+            </div>
+            <div class="app-tag">CelebA-style attributes</div>
+          </div>
+
+          <div class="app-card" data-app="anomaly_detection">
+            <div>
+              <div class="app-name">Anomaly Detection</div>
+              <div class="app-desc">
+                Visualize how ShapBPT justifies anomalous predictions on industrial images.
+              </div>
+            </div>
+            <div class="app-tag">Industrial / MVTec-like</div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- Example viewer -->
+    <section id="example-viewer">
+      <div class="viewer-header">
+        <div>
+          <div class="viewer-application-label" id="viewer-app-label">Application</div>
+          <div class="viewer-title" id="viewer-title">Example</div>
+        </div>
+        <div class="viewer-actions">
+          <button class="btn-outline" id="btn-change-app">Change application</button>
+          <button class="btn-primary" id="btn-new-example">New example</button>
+        </div>
+      </div>
+
+      <div class="viewer-grid">
+        <div class="viewer-panel">
+          <h3>Original Image</h3>
+          <img id="viewer-image" src="" alt="Original input" />
+        </div>
+        <div class="viewer-panel">
+          <h3>ShapBPT Explanation</h3>
+          <img id="viewer-expl" src="" alt="ShapBPT explanation" />
+          <p class="explanation-text" id="viewer-desc"></p>
+        </div>
+      </div>
+
+      <div class="rating-area">
+        <div>
+          <div style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.12em; color:#9ca3af; margin-bottom:0.2rem;">
+            Rate this explanation
+          </div>
+          <div class="rating-buttons">
+            <span style="font-size:0.9rem; color:#d1d5db; margin-right:0.2rem;">How good is this explanation?</span>
+            <button data-rating="1">1</button>
+            <button data-rating="2">2</button>
+            <button data-rating="3">3</button>
+            <button data-rating="4">4</button>
+            <button data-rating="5">5</button>
+          </div>
+        </div>
+        <div class="rating-status" id="rating-status">No rating yet.</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // ---- Example DATA (replace with your real image/explanation paths) ----
+    const shapBptExamples = {
+      object_recognition: [
+        {
+          id: "obj_1",
+          imageUrl: "images/object_dog.png",
+          explanationUrl: "images/object_dog_shapbpt.png",
+          title: "Dog vs Cat",
+          description:
+            "ShapBPT highlights the ear, muzzle, and torso contours, which are most discriminative for the 'dog' class."
+        },
+        {
+          id: "obj_2",
+          imageUrl: "images/object_airplane.png",
+          explanationUrl: "images/object_airplane_shapbpt.png",
+          title: "Airplane",
+          description:
+            "Attributions concentrate on the wings and fuselage, matching the most informative regions for the airplane prediction."
+        }
+      ],
+      facial_attributes: [
+        {
+          id: "face_1",
+          imageUrl: "images/face_smile.png",
+          explanationUrl: "images/face_smile_shapbpt.png",
+          title: "Smiling Attribute",
+          description:
+            "Positive ShapBPT contributions appear around the mouth and cheeks, supporting the 'smiling' attribute."
+        },
+        {
+          id: "face_2",
+          imageUrl: "images/face_glasses.png",
+          explanationUrl: "images/face_glasses_shapbpt.png",
+          title: "Eyeglasses Attribute",
+          description:
+            "The explanation focuses on the eyeglass frames and eyes, aligning with the eyeglasses classifier."
+        }
+      ],
+      anomaly_detection: [
+        {
+          id: "an_1",
+          imageUrl: "images/hazelnut_ok.png",
+          explanationUrl: "images/hazelnut_ok_shapbpt.png",
+          title: "Hazelnut – Crack Anomaly",
+          description:
+            "High ShapBPT values are concentrated near the surface crack, indicating why this sample is flagged as anomalous."
+        },
+        {
+          id: "an_2",
+          imageUrl: "images/metal_surface.png",
+          explanationUrl: "images/metal_surface_shapbpt.png",
+          title: "Metal Surface – Scratch",
+          description:
+            "The detected scratch region receives strong attributions, while the uniform background remains mostly neutral."
+        }
+      ]
+    };
+
+    // ---- State ----
+    let currentApp = null;
+    let currentExample = null;
+
+    const navHome = document.getElementById("nav-home");
+    const navApps = document.getElementById("nav-apps");
+    const homeSection = document.getElementById("home");
+    const exampleViewer = document.getElementById("example-viewer");
+
+    const appCards = document.querySelectorAll(".app-card");
+
+    const viewerAppLabel = document.getElementById("viewer-app-label");
+    const viewerTitle = document.getElementById("viewer-title");
+    const viewerImage = document.getElementById("viewer-image");
+    const viewerExpl = document.getElementById("viewer-expl");
+    const viewerDesc = document.getElementById("viewer-desc");
+    const ratingStatus = document.getElementById("rating-status");
+    const ratingButtons = document.querySelectorAll(".rating-buttons button");
+
+    const metricImages = document.getElementById("metric-images");
+    const metricRatings = document.getElementById("metric-ratings");
+
+    const exploreBtn = document.getElementById("explore-btn");
+    const randomExampleBtn = document.getElementById("random-example-btn");
+    const changeAppBtn = document.getElementById("btn-change-app");
+    const newExampleBtn = document.getElementById("btn-new-example");
+
+    // ---- Utility ----
+    function computeTotalExamples() {
+      let total = 0;
+      Object.values(shapBptExamples).forEach((arr) => {
+        total += arr.length;
+      });
+      return total;
+    }
+
+    function getSavedRatingCount() {
+      const raw = localStorage.getItem("shapbpt_ratings");
+      if (!raw) return 0;
+      try {
+        const ratings = JSON.parse(raw);
+        return Object.keys(ratings).length;
+      } catch {
+        return 0;
+      }
+    }
+
+    function updateMetrics() {
+      metricImages.textContent = computeTotalExamples();
+      metricRatings.textContent = getSavedRatingCount();
+    }
+
+    function setNav(active) {
+      if (active === "home") {
+        navHome.classList.add("active");
+        navApps.classList.remove("active");
+      } else {
+        navHome.classList.remove("active");
+        navApps.classList.add("active");
+      }
+    }
+
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // Choose a random example from current app
+    function pickRandomExample(appKey) {
+      const list = shapBptExamples[appKey] || [];
+      if (!list.length) return null;
+      const idx = Math.floor(Math.random() * list.length);
+      return list[idx];
+    }
+
+    function appKeyToLabel(key) {
+      if (key === "object_recognition") return "Object Recognition";
+      if (key === "facial_attributes") return "Facial Attributes";
+      if (key === "anomaly_detection") return "Anomaly Detection";
+      return key;
+    }
+
+    function showExample(appKey, example) {
+      currentApp = appKey;
+      currentExample = example;
+
+      viewerAppLabel.textContent = appKeyToLabel(appKey);
+      viewerTitle.textContent = example.title;
+      viewerImage.src = example.imageUrl;
+      viewerExpl.src = example.explanationUrl;
+      viewerDesc.textContent = example.description;
+
+      const existingRating = getRating(example.id);
+      if (existingRating) {
+        ratingStatus.textContent = `Your rating: ${existingRating}/5`;
+      } else {
+        ratingStatus.textContent = "No rating yet.";
+      }
+
+      exampleViewer.classList.add("visible");
+      setNav("apps");
+      scrollToTop();
+    }
+
+    function getRating(exampleId) {
+      const raw = localStorage.getItem("shapbpt_ratings");
+      if (!raw) return null;
+      try {
+        const ratings = JSON.parse(raw);
+        return ratings[exampleId] || null;
+      } catch {
+        return null;
+      }
+    }
+
+    function saveRating(exampleId, rating) {
+      const raw = localStorage.getItem("shapbpt_ratings");
+      let ratings = {};
+      if (raw) {
+        try {
+          ratings = JSON.parse(raw);
+        } catch {
+          ratings = {};
+        }
+      }
+      ratings[exampleId] = rating;
+      localStorage.setItem("shapbpt_ratings", JSON.stringify(ratings));
+      updateMetrics();
+    }
+
+    // ---- Event handlers ----
+    appCards.forEach((card) => {
+      card.addEventListener("click", () => {
+        const app = card.getAttribute("data-app");
+        const example = pickRandomExample(app);
+        if (!example) return;
+        showExample(app, example);
+      });
+    });
+
+    navHome.addEventListener("click", () => {
+      setNav("home");
+      homeSection.classList.remove("hidden");
+      exampleViewer.classList.remove("visible");
+      scrollToTop();
+    });
+
+    navApps.addEventListener("click", () => {
+      setNav("apps");
+      // On click, just scroll to applications section on the home
+      document.getElementById("applications").scrollIntoView({ behavior: "smooth" });
+    });
+
+    exploreBtn.addEventListener("click", () => {
+      document.getElementById("applications").scrollIntoView({ behavior: "smooth" });
+      setNav("apps");
+    });
+
+    randomExampleBtn.addEventListener("click", () => {
+      // pick a random application first
+      const appKeys = Object.keys(shapBptExamples);
+      const app = appKeys[Math.floor(Math.random() * appKeys.length)];
+      const example = pickRandomExample(app);
+      if (!example) return;
+      showExample(app, example);
+    });
+
+    changeAppBtn.addEventListener("click", () => {
+      setNav("apps");
+      exampleViewer.classList.remove("visible");
+      document.getElementById("applications").scrollIntoView({ behavior: "smooth" });
+    });
+
+    newExampleBtn.addEventListener("click", () => {
+      if (!currentApp) return;
+      const example = pickRandomExample(currentApp);
+      if (!example) return;
+      showExample(currentApp, example);
+    });
+
+    ratingButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (!currentExample) return;
+        const rating = Number(btn.getAttribute("data-rating"));
+        saveRating(currentExample.id, rating);
+        ratingStatus.textContent = `Thanks! You rated this explanation ${rating}/5.`;
+      });
+    });
+
+    // Init
+    updateMetrics();
+  </script>
+</body>
+</html>

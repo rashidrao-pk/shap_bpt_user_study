@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ShapBPT User Study – E8 Preference Ranking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    :root {
+      color-scheme: dark;
+      --bg-main: #050816;
+      --bg-card: #020617;
+      --bg-header: rgba(15, 23, 42, 0.95);
+      --border-subtle: #1f2937;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+    }
+    body.light {
+      color-scheme: light;
+      --bg-main: #f9fafb;
+      --bg-card: #ffffff;
+      --bg-header: #e5e7eb;
+      --border-subtle: #d1d5db;
+      --text-main: #0f172a;
+      --text-muted: #6b7280;
+    }
+    body {
+      margin: 0;
+      background: var(--bg-main);
+      color: var(--text-main);
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--bg-header);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+    header nav a {
+      margin-left: 1rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      opacity: 0.85;
+      cursor: pointer;
+    }
+    header nav a.active,
+    header nav a:hover {
+      background: rgba(15, 23, 42, 0.7);
+      opacity: 1;
+    }
+    .theme-toggle {
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      padding: 0.3rem 0.8rem;
+      font-size: 0.8rem;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      margin-left: 0.75rem;
+    }
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 3rem;
+    }
+    .hidden {
+      display: none;
+    }
+    #home {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+      margin-top: 2rem;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
+      gap: 2rem;
+      align-items: center;
+    }
+    @media (max-width: 800px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+    .hero-title {
+      font-size: clamp(2.2rem, 4vw, 2.8rem);
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+    .hero-title span {
+      background: linear-gradient(135deg, #22c55e, #22d3ee, #a855f7);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .hero-subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 36rem;
+    }
+    .hero-actions {
+      margin-top: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .btn-primary,
+    .btn-outline {
+      border-radius: 999px;
+      padding: 0.6rem 1.1rem;
+      font-size: 0.95rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease,
+        border-color 0.1s ease, color 0.1s ease;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #22c55e, #22d3ee, #a855f7);
+      color: #020617;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 34px rgba(59, 130, 246, 0.55);
+    }
+    .btn-outline {
+      background: transparent;
+      border-color: #4b5563;
+      color: #e5e7eb;
+    }
+    body.light .btn-outline {
+      color: #111827;
+    }
+    .btn-outline:hover {
+      background: #111827;
+      border-color: #9ca3af;
+    }
+    body.light .btn-outline:hover {
+      background: #e5e7eb;
+    }
+    .hero-card {
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      background: radial-gradient(circle at top, #1e293b, #020617);
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.7);
+    }
+    body.light .hero-card {
+      background: #ffffff;
+    }
+    .hero-card h2 {
+      margin-top: 0;
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .hero-card p {
+      font-size: 0.95rem;
+      color: #d1d5db;
+      margin-bottom: 0.5rem;
+    }
+    body.light .hero-card p {
+      color: #374151;
+    }
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+    .metric {
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 0.9rem;
+      padding: 0.7rem;
+      border: 1px solid var(--border-subtle);
+    }
+    body.light .metric {
+      background: #f9fafb;
+    }
+    .metric-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+    }
+    .metric-value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 0.25rem;
+    }
+
+    /* User Study section */
+    #user-study {
+      margin-top: 3rem;
+      border-radius: 1.5rem;
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-card);
+      padding: 1.5rem;
+    }
+    .study-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .study-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    .study-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+    .study-step {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .trial-info {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+    }
+    .study-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.8fr);
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    @media (max-width: 900px) {
+      .study-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+    .study-panel {
+      background: var(--bg-card);
+      border-radius: 1rem;
+      border: 1px solid var(--border-subtle);
+      padding: 0.9rem;
+    }
+    .study-panel h3 {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      margin: 0 0 0.5rem 0;
+    }
+    .study-panel img {
+      width: 100%;
+      border-radius: 0.9rem;
+      border: 1px solid #111827;
+      display: block;
+    }
+    body.light .study-panel img {
+      border-color: #d1d5db;
+    }
+    .explanations-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.9rem;
+    }
+    @media (max-width: 700px) {
+      .explanations-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+    .exp-card {
+      background: var(--bg-card);
+      border-radius: 0.9rem;
+      border: 1px solid var(--border-subtle);
+      padding: 0.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .exp-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .exp-rank {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .exp-rank select {
+      background: var(--bg-card);
+      border-radius: 999px;
+      border: 1px solid #374151;
+      color: inherit;
+      padding: 0.15rem 0.6rem;
+      font-size: 0.85rem;
+      outline: none;
+    }
+    .exp-rank select:focus {
+      border-color: #22c55e;
+    }
+    .study-warning {
+      font-size: 0.8rem;
+      color: #f97373;
+      margin-top: 0.6rem;
+      display: none;
+    }
+    .study-actions {
+      margin-top: 1.4rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+    }
+    .thank-you {
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    .thank-you h2 {
+      margin-bottom: 0.5rem;
+    }
+    .thank-you p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Expertise panel */
+    .expertise-panel {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background: var(--bg-card);
+      border-radius: 1rem;
+      border: 1px solid var(--border-subtle);
+      font-size: 0.9rem;
+    }
+    .expertise-options {
+      margin-top: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+    .expertise-form {
+      margin-top: 0.75rem;
+      display: none;
+    }
+    .expertise-form label {
+      display: block;
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+    }
+    .expertise-form select {
+      margin-top: 0.2rem;
+      width: 100%;
+      max-width: 260px;
+      border-radius: 0.5rem;
+      border: 1px solid #4b5563;
+      background: var(--bg-main);
+      color: inherit;
+      padding: 0.25rem 0.4rem;
+      font-size: 0.85rem;
+    }
+    .expertise-note {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+
+    /* 🔍 Mobile thumbnail tweaks */
+    @media (max-width: 600px) {
+      .study-panel img {
+        max-height: 220px;
+        object-fit: contain;
+      }
+      .exp-card img {
+        max-height: 160px;
+        object-fit: contain;
+      }
+      .hero {
+        gap: 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <span>🌳</span>
+      <span>ShapBPT User Study</span>
+    </div>
+    <div style="display:flex; align-items:center;">
+      <nav>
+        <a id="nav-home" class="active">Home</a>
+        <a href="/admin/dashboard">Admin</a>
+      </nav>
+      <button id="theme-toggle" class="theme-toggle">Toggle theme</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Main / Home -->
+    <section id="home">
+      <div class="hero">
+        <div>
+          <!-- <img src=""> -->
+          <!-- <h3 class="hero-title"> <span>AAAI-26</span> </h3> -->
+          <h1 class="hero-title">
+            Interpretable <span>ShapBPT</span> Explanations – User Preference Study
+          </h1>
+          <p class="hero-subtitle">
+            This page implements the E8 user preference study: for each image, you will see four
+            explanation maps and rank them from most to least helpful. The identity of the underlying
+            methods (AA-1000, BPT-1000, LIME-1000, GradCAM) is hidden.
+          </p>
+          <div class="hero-actions">
+            <button class="btn-primary" id="btn-start-study">
+              Start user study
+            </button>
+            <button class="btn-outline" id="btn-scroll-study">
+              Learn how it works
+            </button>
+          </div>
+
+          <div class="expertise-panel">
+            <strong>Optionally tell us your background</strong>
+            <div class="expertise-options">
+              <label>
+                <input type="radio" name="expertise_choice" value="describe">
+                I want to describe my knowledge
+              </label>
+              <label>
+                <input type="radio" name="expertise_choice" value="anonymous" checked>
+                Keep anonymous (skip this step)
+              </label>
+            </div>
+            <form id="expertise-form" class="expertise-form">
+              <label>
+                1. How would you rate your knowledge about <strong>computer vision</strong>?
+                <select id="exp-cv" required>
+                  <option value="">-- select --</option>
+                  <option value="5">5 – Expert</option>
+                  <option value="4">4 – Advanced</option>
+                  <option value="3">3 – Intermediate</option>
+                  <option value="2">2 – Some familiarity</option>
+                  <option value="1">1 – New to this field</option>
+                </select>
+              </label>
+              <label>
+                2. How would you rate your knowledge about <strong>explainable AI</strong>?
+                <select id="exp-xai" required>
+                  <option value="">-- select --</option>
+                  <option value="5">5 – Expert</option>
+                  <option value="4">4 – Advanced</option>
+                  <option value="3">3 – Intermediate</option>
+                  <option value="2">2 – Some familiarity</option>
+                  <option value="1">1 – New to this field</option>
+                </select>
+              </label>
+              <label>
+                3. How would you rate your knowledge about
+                <strong>LIME / SHAP / GradCAM</strong>?
+                <select id="exp-methods" required>
+                  <option value="">-- select --</option>
+                  <option value="5">5 – Expert</option>
+                  <option value="4">4 – Advanced</option>
+                  <option value="3">3 – Intermediate</option>
+                  <option value="2">2 – Some familiarity</option>
+                  <option value="1">1 – New to this field</option>
+                </select>
+              </label>
+              <div class="expertise-note">
+                Your answers are stored only as anonymous numeric scores linked to a random subject ID.
+              </div>
+              <button type="submit" class="btn-outline" style="margin-top:0.7rem;">
+                Save my expertise
+              </button>
+              <span id="expertise-status" class="expertise-note"></span>
+            </form>
+          </div>
+        </div>
+
+        <div class="hero-card">
+          <h2>E8 – User Preference Study</h2>
+          <p>
+            We use a within-subject, forced-ranking design: for each trial, participants see four
+            explanations side-by-side and order them from 1 (most helpful) to 4 (least helpful).
+          </p>
+          <p>
+            This yields ordinal data suitable for non-parametric tests (e.g., Friedman and Nemenyi),
+            and lets us compare BPT with baseline methods in terms of perceived intuitiveness.
+          </p>
+          <div class="hero-metrics">
+            <div class="metric">
+              <div class="metric-label">Trials</div>
+              <div class="metric-value" id="metric-trials">4</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Methods</div>
+              <div class="metric-value">4</div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Your progress</div>
+              <div class="metric-value" id="metric-progress">0 / 4</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works section -->
+    <section id="how-it-works" class="hidden">
+      <div class="hero-card" style="margin-top:1.5rem;">
+        <h2>How this study works</h2>
+        <p style="font-size:0.95rem;">
+          In each trial, you will see one input image and four explanation maps produced by
+          different methods. The underlying CNN classifier (e.g., ResNet) predicts one
+          ImageNet class with some probability.
+        </p>
+        <p style="font-size:0.95rem;">
+          Your task is to:
+        </p>
+        <ol style="font-size:0.9rem; color:var(--text-muted); padding-left:1.2rem;">
+          <li>Look at the input image and the predicted class.</li>
+          <li>Ask yourself: <em>“Where should this class appear in the image?”</em></li>
+          <li>Inspect the four explanations and decide which one best localizes the object.</li>
+          <li>Rank the four explanations from 1 (most helpful) to 4 (least helpful).</li>
+        </ol>
+
+        <div id="how-example"
+             style="margin-top:1.2rem; display:grid; grid-template-columns:minmax(0,1.4fr) minmax(0,1.6fr); gap:1rem; align-items:flex-start;">
+          <div>
+            <h3 style="font-size:0.9rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--text-muted); margin:0 0 0.4rem 0;">
+              Example image
+            </h3>
+            <img id="how-example-image" src="" alt="Example image"
+                 style="width:100%; border-radius:0.9rem; border:1px solid #111827;">
+          </div>
+          <div style="font-size:0.9rem; color:var(--text-muted);" id="how-example-text">
+            <!-- Filled by JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- User Study section -->
+    <section id="user-study" class="hidden">
+      <div class="study-header">
+        <div>
+          <div class="study-title">Preference Ranking Task</div>
+          <div class="study-subtitle">
+            For each <b>image-classification</b> task, rank the four explanations from
+            <strong>1 (most helpful)</strong> to <strong>4 (least helpful)</strong>.
+          </div>
+          <div class="study-step">
+            Use each rank exactly once per trial – no ties allowed.
+          </div>
+        </div>
+        <div class="trial-info" id="trial-info-label">
+          Trial 1 of 4
+        </div>
+      </div>
+
+      <div id="study-content">
+        <!-- Filled by JavaScript -->
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // -------- Theme --------
+    function applyTheme(theme) {
+      if (theme === "light") {
+        document.body.classList.add("light");
+      } else {
+        document.body.classList.remove("light");
+      }
+    }
+    const storedTheme = localStorage.getItem("shapbpt_theme") || "dark";
+    applyTheme(storedTheme);
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+      const current = document.body.classList.contains("light") ? "light" : "dark";
+      const next = current === "light" ? "dark" : "light";
+      localStorage.setItem("shapbpt_theme", next);
+      applyTheme(next);
+    });
+
+    // -------- Study config (static list of trials) --------
+    // You can swap these to use any *_Input.png set you want.
+    const TRIALS = [
+      {
+        id: "butterfly",
+        name: "Butterfly",
+        rawImage: "/static/images/47683_Input.png",
+        methods: [
+          { methodId: "AA-1000",   image: "/static/images/47683_Partition-1000.png" },
+          { methodId: "BPT-1000",  image: "/static/images/47683_BPT-1000.png" },
+          { methodId: "LIME-1000", image: "/static/images/47683_LIME-1000.png" },
+          { methodId: "GradCAM",   image: "/static/images/47683_GradCAM.png" },
+        ]
+      },
+      {
+        id: "ladybug",
+        name: "Ladybug",
+        rawImage: "/static/images/8733_Input.png",
+        methods: [
+          { methodId: "AA-1000",   image: "/static/images/8733_Partition-1000.png" },
+          { methodId: "BPT-1000",  image: "/static/images/8733_BPT-1000.png" },
+          { methodId: "LIME-1000", image: "/static/images/8733_LIME-1000.png" },
+          { methodId: "GradCAM",   image: "/static/images/8733_GradCAM.png" },
+        ]
+      },
+      {
+        id: "streetsign",
+        name: "Street Sign",
+        rawImage: "/static/images/5428_Input.png",
+        methods: [
+          { methodId: "AA-1000",   image: "/static/images/5428_Partition-1000.png" },
+          { methodId: "BPT-1000",  image: "/static/images/5428_BPT-1000.png" },
+          { methodId: "LIME-1000", image: "/static/images/5428_LIME-1000.png" },
+          { methodId: "GradCAM",   image: "/static/images/5428_GradCAM.png" },
+        ]
+      },
+      {
+        id: "bench",
+        name: "Park Bench",
+        rawImage: "/static/images/8733_Input.png",
+        methods: [
+          { methodId: "AA-1000",   image: "/static/images/8733_Partition-1000.png" },
+          { methodId: "BPT-1000",  image: "/static/images/8733_BPT-1000.png" },
+          { methodId: "LIME-1000", image: "/static/images/8733_LIME-1000.png" },
+          { methodId: "GradCAM",   image: "/static/images/8733_GradCAM.png" },
+        ]
+      },
+    ];
+    const API_BASE = ""; // same origin
+
+    // ---- Prediction details loaded from predictions.json ----
+    // predictions.json should live at: static/predictions.json
+    let predictionsByBaseId = {};
+
+    async function loadPredictions() {
+    try {
+      const res = await fetch("/static/predictions.json");
+      if (!res.ok) {
+        console.warn("predictions.json not found or not OK");
+        return;
+      }
+      const arr = await res.json();
+
+      arr.forEach(item => {
+        const name = item.image_name || "";
+        // match any digit run at the end, not just 5 chars
+        const m = name.match(/(\d+)$/);
+        if (!m) return;
+
+        // normalize: strip leading zeros
+        const numericId = parseInt(m[1], 10);
+        if (Number.isNaN(numericId)) return;
+
+        const baseId = String(numericId); // e.g. "47683", "8733"
+        predictionsByBaseId[baseId] = item;
+      });
+    } catch (err) {
+      console.error("Error loading predictions.json:", err);
+    }
+  }
+
+    function getBaseIdFromRawImage(path) {
+    // e.g. "/static/images/08733_Input.png" or "8733_Input.png" -> "8733"
+    const m = path.match(/(\d+)_Input\.png$/);
+    if (!m) return null;
+    const numericId = parseInt(m[1], 10);
+    if (Number.isNaN(numericId)) return null;
+    return String(numericId);
+  }
+
+    // random subject id
+    function getSubjectId() {
+      let sid = localStorage.getItem("shapbpt_subject_id");
+      if (!sid) {
+        sid = "S-" + Math.random().toString(36).slice(2, 10);
+        localStorage.setItem("shapbpt_subject_id", sid);
+      }
+      return sid;
+    }
+
+    // shuffle util
+    function shuffleArray(arr) {
+      const copy = arr.slice();
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    let trialOrder = shuffleArray(TRIALS);
+    let currentTrialIndex = 0;
+    let shuffledMethods = [];
+    const methodLabels = ["A", "B", "C", "D"];
+
+    function updateProgress() {
+      document.getElementById("metric-progress").textContent =
+        `${Math.min(currentTrialIndex, trialOrder.length)} / ${trialOrder.length}`;
+      document.getElementById("metric-trials").textContent =
+        trialOrder.length.toString();
+    }
+
+    function scrollToStudy() {
+      document.getElementById("user-study").scrollIntoView({ behavior: "smooth" });
+    }
+
+    // -------- Expertise handling --------
+    const expertiseForm = document.getElementById("expertise-form");
+    const expertiseStatus = document.getElementById("expertise-status");
+
+    document.querySelectorAll("input[name='expertise_choice']").forEach(radio => {
+      radio.addEventListener("change", () => {
+        if (radio.value === "describe" && radio.checked) {
+          expertiseForm.style.display = "block";
+        } else if (radio.value === "anonymous" && radio.checked) {
+          expertiseForm.style.display = "none";
+        }
+      });
+    });
+
+    expertiseForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const cv = parseInt(document.getElementById("exp-cv").value, 10);
+      const xai = parseInt(document.getElementById("exp-xai").value, 10);
+      const methods = parseInt(document.getElementById("exp-methods").value, 10);
+      if ([cv, xai, methods].some(v => isNaN(v) || v < 1 || v > 5)) {
+        expertiseStatus.textContent = "Please select a value for each field.";
+        return;
+      }
+      const payload = {
+        subject_id: getSubjectId(),
+        expertise_cv: cv,
+        expertise_xai: xai,
+        expertise_methods: methods
+      };
+      try {
+        const res = await fetch(`${API_BASE}/api/profile`, {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+          expertiseStatus.textContent = "Could not save profile (server error).";
+          return;
+        }
+        expertiseStatus.textContent = "Saved. Thank you!";
+      } catch (err) {
+        console.error(err);
+        expertiseStatus.textContent = "Network error while saving.";
+      }
+    });
+
+    // -------- "How it works" example --------
+    function populateHowItWorksExample() {
+      const exImg = document.getElementById("how-example-image");
+      const exText = document.getElementById("how-example-text");
+      if (!exImg || !exText || !TRIALS.length) return;
+
+      const trial = TRIALS[0];
+      exImg.src = trial.rawImage;
+
+      const baseId = getBaseIdFromRawImage(trial.rawImage);
+      let textHtml;
+
+      if (baseId && predictionsByBaseId[baseId]) {
+        const pred = predictionsByBaseId[baseId];
+        const cls = pred.predicted_class || "some class";
+        const probRaw = pred.predicted_probability != null ? Number(pred.predicted_probability) : null;
+        const probPct = probRaw != null ? (probRaw * 100).toFixed(2) : null;
+        const probText = probPct != null ? `${probPct}%` : "a certain probability";
+
+        textHtml = `
+          <p>
+            In this example, a <strong>ResNet</strong> based classifier predicts the class
+            <strong>${cls}</strong> with probability <strong>${probText}</strong>.
+          </p>
+          <p>
+            What do you think? Where should this object appear in the image?
+          </p>
+          <p>
+            In the actual study, for each image you will see four explanation maps and answer:
+          </p>
+          <ul>
+            <li><em>Where is this object located in the image?</em></li>
+            <li><em>Which explanation best highlights this object?</em></li>
+          </ul>
+          <p>
+            You will then rank the four explanations from
+            <strong>1 (most helpful)</strong> to <strong>4 (least helpful)</strong>.
+          </p>
+        `;
+      } else {
+        textHtml = `
+          <p>
+            In this example, a CNN classifier predicts an object class in the image with high probability.
+          </p>
+          <p>
+            What do you think? Where should this class appear in the image?
+          </p>
+          <p>
+            In the actual study, for each image you will see four explanation maps and answer:
+          </p>
+          <ul>
+            <li><em>Where is this object located in the image?</em></li>
+            <li><em>Which explanation best highlights this object?</em></li>
+          </ul>
+          <p>
+            You will then rank the four explanations from
+            <strong>1 (most helpful)</strong> to <strong>4 (least helpful)</strong>.
+          </p>
+        `;
+      }
+
+      exText.innerHTML = textHtml;
+    }
+
+    // -------- Render trial --------
+    function renderTrial() {
+      const studySection = document.getElementById("user-study");
+      const content = document.getElementById("study-content");
+      const trialInfoLabel = document.getElementById("trial-info-label");
+
+      if (currentTrialIndex >= trialOrder.length) {
+        content.innerHTML = `
+          <div class="thank-you">
+            <h2>Thank you!</h2>
+            <p>Your rankings have been recorded.</p>
+          </div>
+        `;
+        trialInfoLabel.textContent = "Study complete";
+        updateProgress();
+        return;
+      }
+
+      const trial = trialOrder[currentTrialIndex];
+      const trialNumber = currentTrialIndex + 1;
+      trialInfoLabel.textContent = `Trial ${trialNumber} of ${trialOrder.length} \u2013 ${trial.name}`;
+      updateProgress();
+
+      shuffledMethods = shuffleArray(trial.methods).map((m, idx) => ({
+        ...m,
+        label: methodLabels[idx]
+      }));
+
+      // Build explanation cards
+      let expCardsHtml = "";
+      shuffledMethods.forEach((m) => {
+        expCardsHtml += `
+          <div class="exp-card" data-method-id="${m.methodId}" data-label="${m.label}">
+            <div class="exp-label">Explanation ${m.label}</div>
+            <img src="${m.image}" alt="Explanation ${m.label}">
+            <div class="exp-rank">
+              <span>Rank:</span>
+              <select name="rank">
+                <option value="">-- choose --</option>
+                <option value="1">1 (most helpful)</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4 (least helpful)</option>
+              </select>
+            </div>
+          </div>
+        `;
+      });
+
+      // Get prediction details for this trial if available
+      let predictionHtml = "";
+      const baseId = getBaseIdFromRawImage(trial.rawImage);
+      if (baseId && predictionsByBaseId[baseId]) {
+        const pred = predictionsByBaseId[baseId];
+        const cls = pred.predicted_class || "this class";
+        const probRaw = pred.predicted_probability != null ? Number(pred.predicted_probability) : null;
+        const probPct = probRaw != null ? (probRaw * 100).toFixed(2) : null;
+        const probText = probPct != null ? `${probPct}%` : "some probability";
+
+        predictionHtml = `
+          <p style="margin-top:0.75rem; font-size:0.85rem; color: var(--text-muted);">
+            The <strong>ResNet</strong>-based classifier predicts class <strong>${cls}</strong>
+            with probability <strong>${probText}</strong>.<br/>
+            What do you think? Where is this object located in the image, and
+            which of the four explanations best highlights this object in your opinion?
+          </p>
+        `;
+      } else {
+        // fallback generic question if no JSON info
+        predictionHtml = `
+          <p style="margin-top:0.75rem; font-size:0.85rem; color: var(--text-muted);">
+            A CNN classifier has detected an object in this image.
+            Where do you think this object is located, and which explanation
+            best captures it?
+          </p>
+        `;
+      }
+
+      content.innerHTML = `
+        <div class="study-grid">
+          <div class="study-panel">
+            <h3>Original image</h3>
+            <img src="${trial.rawImage}" alt="Original ${trial.name}">
+            ${predictionHtml}
+          </div>
+          <div class="study-panel">
+            <h3>Explanation maps</h3>
+            <div class="explanations-grid">
+              ${expCardsHtml}
+            </div>
+            <div class="study-warning" id="study-warning">
+              Please assign ranks 1, 2, 3, and 4 exactly once (no ties).
+            </div>
+            <div class="study-actions">
+              <button class="btn-primary" id="btn-submit-trial">Submit ranking</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      studySection.classList.remove("hidden");
+
+      const submitBtn = document.getElementById("btn-submit-trial");
+      submitBtn.addEventListener("click", handleSubmitTrial);
+    }
+
+    async function handleSubmitTrial() {
+      const warning = document.getElementById("study-warning");
+      warning.style.display = "none";
+
+      const content = document.getElementById("study-content");
+      const cards = Array.from(content.querySelectorAll(".exp-card"));
+      const ranks = [];
+      const payloadRankings = [];
+
+      for (const card of cards) {
+        const select = card.querySelector("select[name='rank']");
+        const value = select.value.trim();
+        if (!value) {
+          warning.textContent = "Please choose a rank for each explanation.";
+          warning.style.display = "block";
+          return;
+        }
+        const rankInt = parseInt(value, 10);
+        ranks.push(rankInt);
+        payloadRankings.push({
+          method_id: card.getAttribute("data-method-id"),
+          rank: rankInt
+        });
+      }
+
+      const sorted = ranks.slice().sort((a, b) => a - b);
+      const expected = [1, 2, 3, 4];
+      if (sorted.length !== expected.length ||
+          !sorted.every((v, i) => v === expected[i])) {
+        warning.textContent = "Ranks must be 1, 2, 3, and 4 used exactly once.";
+        warning.style.display = "block";
+        return;
+      }
+
+      const trial = trialOrder[currentTrialIndex];
+      const payload = {
+        subject_id: getSubjectId(),
+        trial_id: trial.id,
+        trial_name: trial.name,
+        rankings: payloadRankings
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/api/rank`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+          console.error("Failed to submit ranking:", await res.text());
+          warning.textContent = "Error sending data to server. Please try again.";
+          warning.style.display = "block";
+          return;
+        }
+      } catch (err) {
+        console.error("Network error:", err);
+        warning.textContent = "Network error. Please check connection and try again.";
+        return;
+      }
+
+      currentTrialIndex += 1;
+      renderTrial();
+      scrollToStudy();
+    }
+
+    // -------- Navigation & init --------
+    document.getElementById("nav-home").addEventListener("click", () => {
+      document.getElementById("home").classList.remove("hidden");
+      document.getElementById("user-study").classList.add("hidden");
+      document.getElementById("how-it-works").classList.add("hidden");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    document.getElementById("btn-start-study").addEventListener("click", () => {
+      document.getElementById("home").classList.remove("hidden");
+      document.getElementById("how-it-works").classList.add("hidden");
+      document.getElementById("user-study").classList.remove("hidden");
+      renderTrial();
+      scrollToStudy();
+    });
+
+    document.getElementById("btn-scroll-study").addEventListener("click", () => {
+      // Show "How it works" description, do NOT start a trial yet
+      const howSection = document.getElementById("how-it-works");
+      if (howSection) {
+        howSection.classList.remove("hidden");
+        howSection.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+
+    // init
+    updateProgress();
+    // First load predictions, then populate example (if predictions available)
+    loadPredictions().then(populateHowItWorksExample).catch(populateHowItWorksExample);
+  </script>
+</body>
+</html>
